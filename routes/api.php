@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KaryawanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    // Daftar karyawan yang saat ini pernah mengambil cuti
+    Route::get('/karyawan/cuti', [KaryawanController::class, 'karyawanCuti']);
+
+    // Sisa cuti setiap karyawan
+    Route::get('/karyawan/sisa-cuti', [KaryawanController::class, 'sisaCuti']);
 });
