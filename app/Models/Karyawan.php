@@ -9,7 +9,6 @@ class Karyawan extends Model
 {
     use HasFactory;
     protected $table = 'karyawans';
-    protected $primaryKey = 'nomor_induk';
     protected $fillable = ['nomor_induk', 'nama', 'tgl_lahir', 'alamat', 'tgl_lahir', 'tgl_gabung'];
 
     public function cutis()

@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\KaryawanController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CutiController;
+use App\Http\Controllers\KaryawanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +20,4 @@ Route::get('/', function () {
 });
 
 Route::resource('/karyawan', KaryawanController::class);
+Route::resource('/cuti', CutiController::class);

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cuti;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\KaryawanResource;
+use App\Http\Resources\SisaCutiResource;
 
 class KaryawanController extends Controller
 {
@@ -14,13 +18,35 @@ class KaryawanController extends Controller
     {
         $karyawans = Karyawan::all();
 
-        return view('karyawan.index', compact('karyawans'));
+        // return response()->view('karyawan.index', [
+        //     'karyawans' => KaryawanResource::collection($karyawans)
+        // ]);
+
+        return KaryawanResource::collection($karyawans);
+    }
+
+    public function firstThreeKaryawan()
+    {
+        $karyawans = Karyawan::orderBy('tgl_gabung')->take(3)->get();
+
+        return response()->json(['3 karyawan pertama gabung' => $karyawans]);
     }
 
     public function karyawanCuti()
     {
-        $karyawans = Karyawan::withCount('cutis')->get();
-        return response()->json($karyawans);
+        $karyawans = Karyawan::whereHas('cutis')->withCount('cutis')->get();
+        return response()->json(['karyawan yang pernah cuti' => $karyawans]);
+    }
+
+    public function sisaCuti()
+    {
+        $karyawans = Karyawan::leftJoin('cutis', 'karyawans.nomor_induk', '=', 'cutis.nomor_induk')
+            ->select('karyawans.nomor_induk', 'karyawans.nama')
+            ->selectRaw('12 - COALESCE(SUM(cutis.lama_cuti), 0) as sisa_cuti')
+            ->groupBy('karyawans.nomor_induk', 'karyawans.nama')
+            ->get();
+
+        return SisaCutiResource::collection($karyawans);
     }
 
     /**
@@ -35,19 +61,26 @@ class KaryawanController extends Controller
     {
         $latestKaryawan = Karyawan::latest()->first();
 
-        if (!$latestKaryawan) {
-            return 'IP06001';
+        // Mengecek apakah sudah ada nomor induk sebelumnya
+        if ($latestKaryawan) {
+            $latestNomorInduk = $latestKaryawan->nomor_induk;
+            $latestNumber = intval(substr($latestNomorInduk, 5));
+        } else {
+            $latestNumber = 0;
         }
 
-        $latestNomorInduk = $latestKaryawan->nomor_induk;
-        $latestNumber = intval(substr($latestNomorInduk, 5)); // Mengambil 5 digit angka terakhir
-
+        // Menentukan nomor induk baru
         $newNumber = $latestNumber + 1;
-        $newNomorInduk = 'IP06' . sprintf("%03d", $newNumber); // Menggunakan 3 digit angka dengan leading zeros
+
+        // Loop hingga nomor induk yang dihasilkan unik
+        do {
+            $newNomorInduk = 'IP06' . sprintf("%03d", $newNumber);
+            $existingKaryawan = Karyawan::where('nomor_induk', $newNomorInduk)->first();
+            $newNumber++;
+        } while ($existingKaryawan);
 
         return $newNomorInduk;
     }
-
 
     /**
      * Store a newly created resource in storage.

@@ -26,13 +26,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php
+                        use Carbon\Carbon;
+                        ?>
+                        @forelse ($karyawans as $item)
                         <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
+                            <th scope="row">{{ $loop->iteration }}</th>
+                            <td>{{ $item->nomor_induk }}</td>
+                            <td>{{ $item->nama }}</td>
+                            <td>{{ $item->alamat }}</td>
+                            <td>{{ Carbon::createFromFormat('Y-m-d', $item->tgl_lahir)->format('d-M-y') }}</td>
+                            <td>{{ Carbon::createFromFormat('Y-m-d', $item->tgl_gabung)->format('d-M-y') }}</td>
                         </tr>
+                        @empty
                         <tr>
+                            <td colspan="6" class="text-danger fw-bold fs-4">Belum ada data</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
