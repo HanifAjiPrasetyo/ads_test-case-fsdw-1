@@ -27,6 +27,7 @@
                     </thead>
                     <tbody>
                         <?php
+
                         use Carbon\Carbon;
                         ?>
                         @forelse ($karyawans as $item)

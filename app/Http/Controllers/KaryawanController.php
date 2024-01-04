@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cuti;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\KaryawanResource;
 use App\Http\Resources\SisaCutiResource;
 
@@ -17,10 +15,6 @@ class KaryawanController extends Controller
     public function index()
     {
         $karyawans = Karyawan::all();
-
-        // return response()->view('karyawan.index', [
-        //     'karyawans' => KaryawanResource::collection($karyawans)
-        // ]);
 
         return KaryawanResource::collection($karyawans);
     }
@@ -88,7 +82,7 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nomor_induk' => 'required|unique:karyawans',
+            'nomor_induk' => 'unique:karyawans',
             'nama' => 'required',
             'alamat' => 'required',
             'tgl_lahir' => 'required|date',
@@ -99,8 +93,7 @@ class KaryawanController extends Controller
 
         Karyawan::create($data);
 
-        return redirect()->route('karyawan.index')
-            ->with('success', 'Karyawan berhasil ditambahkan.');
+        return response()->json(['message' => 'Karyawan berhasil ditambahkan'], 201);
     }
 
     /**
@@ -125,19 +118,17 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, Karyawan $karyawan)
     {
-
         $data = $request->validate([
-            'nomor_induk' => 'required|unique:karyawans',
+            'nomor_induk' => 'unique:karyawans',
             'nama' => 'required',
             'alamat' => 'required',
             'tgl_lahir' => 'required|date',
             'tgl_gabung' => 'required|date'
         ]);
 
-        Karyawan::where('nomor_induk', $karyawan->nomor_induk)->update($data);
+        $data = Karyawan::where('nomor_induk', $karyawan->nomor_induk)->update($data);
 
-        return redirect()->route('karyawan.index')
-            ->with('success', 'Karyawan berhasil diperbarui.');
+        return response()->json(['message' => 'Karyawan berhasil diperbarui']);
     }
 
     /**
@@ -146,7 +137,7 @@ class KaryawanController extends Controller
     public function destroy(Karyawan $karyawan)
     {
         $karyawan->delete();
-        return redirect()->route('karyawan.index')
-            ->with('success', 'Karyawan berhasil dihapus.');
+
+        return response()->json(['message' => 'Karyawan berhasil dihapus']);
     }
 }
