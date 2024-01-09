@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -17,19 +16,25 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $credentials = request(['email', 'password']);
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if (!Auth::attempt($credentials)) {
+            return back()->with('error', 'Login gagal');
         }
 
-        return $user->createToken('login')->plainTextToken;
+        $user = $request->user();
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->plainTextToken;
+
+        if ($token) {
+            return redirect('/api/karyawan')->with('success', 'Berhasil login');
+        }
     }
 
     public function logout(Request $request)
     {
-        return $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens()->delete();
+
+        return redirect('/')->with('success', 'Berhasil logout');
     }
 }

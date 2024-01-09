@@ -6,6 +6,8 @@ use App\Models\Karyawan;
 use Illuminate\Http\Request;
 use App\Http\Resources\KaryawanResource;
 use App\Http\Resources\SisaCutiResource;
+use App\Http\Resources\KaryawanCutiResource;
+use App\Http\Resources\FirstThreeKaryawanResource;
 
 class KaryawanController extends Controller
 {
@@ -16,20 +18,27 @@ class KaryawanController extends Controller
     {
         $karyawans = Karyawan::all();
 
-        return KaryawanResource::collection($karyawans);
+        $karyawanResource = KaryawanResource::collection($karyawans);
+
+        return view('karyawan.index', ['karyawans' => $karyawanResource]);
     }
 
     public function firstThreeKaryawan()
     {
         $karyawans = Karyawan::orderBy('tgl_gabung')->take(3)->get();
 
-        return response()->json(['3 karyawan pertama gabung' => $karyawans]);
+        $karyawanResource = FirstThreeKaryawanResource::collection($karyawans);
+
+        return view('karyawan.first-three', ['karyawans' => $karyawanResource]);
     }
 
     public function karyawanCuti()
     {
         $karyawans = Karyawan::whereHas('cutis')->withCount('cutis')->get();
-        return response()->json(['karyawan yang pernah cuti' => $karyawans]);
+
+        $karyawanResource = KaryawanCutiResource::collection($karyawans);
+
+        return view('karyawan.pernah-cuti', ['karyawans' => $karyawanResource]);
     }
 
     public function sisaCuti()
@@ -40,7 +49,9 @@ class KaryawanController extends Controller
             ->groupBy('karyawans.nomor_induk', 'karyawans.nama')
             ->get();
 
-        return SisaCutiResource::collection($karyawans);
+        $karyawanResource = SisaCutiResource::collection($karyawans);
+
+        return view('karyawan.sisa-cuti', ['karyawans' => $karyawanResource]);
     }
 
     /**
@@ -93,7 +104,7 @@ class KaryawanController extends Controller
 
         Karyawan::create($data);
 
-        return response()->json(['message' => 'Karyawan berhasil ditambahkan'], 201);
+        return redirect('/api/karyawan')->with('success', 'Karyawan berhasil ditambahkan');
     }
 
     /**
@@ -118,17 +129,23 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, Karyawan $karyawan)
     {
-        $data = $request->validate([
-            'nomor_induk' => 'unique:karyawans',
+
+        $rules = [
             'nama' => 'required',
             'alamat' => 'required',
             'tgl_lahir' => 'required|date',
             'tgl_gabung' => 'required|date'
-        ]);
+        ];
 
-        $data = Karyawan::where('nomor_induk', $karyawan->nomor_induk)->update($data);
+        if ($request->nomor_induk != $karyawan->nomor_induk) {
+            $rules['nomor_induk'] = 'unique:karyawans';
+        }
 
-        return response()->json(['message' => 'Karyawan berhasil diperbarui']);
+        $validatedData = $request->validate($rules);
+
+        Karyawan::where('nomor_induk', $karyawan->nomor_induk)->update($validatedData);
+
+        return redirect('/api/karyawan')->with('success', 'Karyawan berhasil diubah');
     }
 
     /**
@@ -138,6 +155,6 @@ class KaryawanController extends Controller
     {
         $karyawan->delete();
 
-        return response()->json(['message' => 'Karyawan berhasil dihapus']);
+        return redirect('/api/karyawan')->with('success', 'Karyawan berhasil dihapus');
     }
 }

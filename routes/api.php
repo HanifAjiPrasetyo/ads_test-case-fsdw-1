@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CutiController;
 use App\Http\Controllers\KaryawanController;
 
 /*
@@ -19,7 +20,7 @@ use App\Http\Controllers\KaryawanController;
 // Login & Register Routes
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'web'])->group(function () {
     // 3 karyawan pertama gabung
     Route::get('/karyawan/first-three-karyawan', [KaryawanController::class, 'firstThreeKaryawan']);
 
@@ -30,15 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/karyawan/sisa-cuti', [KaryawanController::class, 'sisaCuti']);
 
     // CRUD Karyawan API
-    Route::get('/karyawan', [KaryawanController::class, 'index']);
+    Route::resource('karyawan', KaryawanController::class);
 
-    Route::get('/karyawan/{karyawan}', [KaryawanController::class, 'show']);
-
-    Route::post('/karyawan', [KaryawanController::class, 'store']);
-
-    Route::put('/karyawan/{karyawan}', [KaryawanController::class, 'update']);
-
-    Route::delete('/karyawan/{karyawan}', [KaryawanController::class, 'destroy']);
+    // CRUD Cuti API
+    Route::resource('cuti', CutiController::class);
 
     // Logout
     Route::get('/logout', [AuthController::class, 'logout']);

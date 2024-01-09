@@ -48,5 +48,26 @@ class KaryawanSeeder extends Seeder
             'tgl_lahir' => "1983-03-18",
             'tgl_gabung' => "2006-09-06",
         ]);
+        Karyawan::create([
+            'nomor_induk' => $nomorInduk->generateNomorInduk(),
+            'nama' => 'Maulana',
+            'alamat' => 'Jln Candi Agung, No 78 Gg 5, Jakarta',
+            'tgl_lahir' => "1978-11-10",
+            'tgl_gabung' => "2006-09-10",
+        ]);
+        Karyawan::create([
+            'nomor_induk' => $nomorInduk->generateNomorInduk(),
+            'nama' => 'Agfika',
+            'alamat' => 'Jln Nangka, Jakarta Timur',
+            'tgl_lahir' => "1979-02-07",
+            'tgl_gabung' => "2007-01-02",
+        ]);
+        Karyawan::create([
+            'nomor_induk' => $nomorInduk->generateNomorInduk(),
+            'nama' => 'James',
+            'alamat' => 'Jln Merpati, 8 Surabaya',
+            'tgl_lahir' => "1989-05-18",
+            'tgl_gabung' => "2007-04-04",
+        ]);
     }
 }

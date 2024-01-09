@@ -13,7 +13,8 @@ class CutiController extends Controller
      */
     public function index()
     {
-        $cutis = Cuti::all();
+        $cutis = Cuti::orderBy('tgl_cuti')->get();
+
         return view('cuti.index', compact('cutis'));
     }
 
