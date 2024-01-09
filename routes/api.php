@@ -17,7 +17,7 @@ use App\Http\Controllers\KaryawanController;
 */
 
 
-// Login & Register Routes
+// Login
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware(['auth:sanctum', 'web'])->group(function () {
