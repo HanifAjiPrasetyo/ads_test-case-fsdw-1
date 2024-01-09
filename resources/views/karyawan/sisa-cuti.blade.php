@@ -27,7 +27,7 @@
                         <tr>
                             <th scope="col">Nomor Induk</th>
                             <th scope="col">Nama</th>
-                            <th scope="col">Sisa Cuti</th>
+                            <th scope="col">Sisa Cuti (2020)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,7 +39,7 @@
                         <tr>
                             <td>{{ $item->nomor_induk }}</td>
                             <td>{{ $item->nama }}</td>
-                            <td>{{ $item->sisa_cuti }} kali</td>
+                            <td>{{ $item->sisa_cuti }} hari</td>
                         </tr>
                         @empty
                         <tr>
