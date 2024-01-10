@@ -33,9 +33,6 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
     // CRUD Karyawan API
     Route::resource('karyawan', KaryawanController::class);
 
-    // CRUD Cuti API
-    Route::resource('cuti', CutiController::class);
-
     // Logout
     Route::get('/logout', [AuthController::class, 'logout']);
 });
